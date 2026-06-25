@@ -143,3 +143,25 @@ GitHub Actions also runs the tests automatically whenever changes are pushed to 
 The current version focuses on Docker-based infrastructure running locally. It demonstrates the complete incident lifecycle: detection, AI-assisted analysis, controlled remediation, recovery verification, experiment tracking, and dashboard reporting.
 
 Future improvements include Kubernetes support, AWS integration, alert notifications, authentication, persistent remediation policies, and automated rollback.
+
+## Screenshots
+
+### Incident and Recovery Dashboard
+
+![Incident Dashboard](screenshots/dashboard.png)
+
+### Infrastructure Monitoring
+
+![Grafana Dashboard](screenshots/grafana.png)
+
+### Incident API
+
+![Incident API Documentation](screenshots/incident-api-docs.png)
+
+### Automated Remediation
+
+![Remediation Logs](screenshots/remediation-logs.png)
+
+### Automated Tests
+
+![GitHub Actions](screenshots/github-actions.png)
