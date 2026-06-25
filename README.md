@@ -165,3 +165,33 @@ Future improvements include Kubernetes support, AWS integration, alert notificat
 ### Automated Tests
 
 ![GitHub Actions](screenshots/github-actions.png)
+
+## Experiment Results
+
+The system was evaluated through 11 controlled failure experiments covering API, worker, PostgreSQL, and Redis failures.
+
+| Metric                           |        Result |
+| -------------------------------- | ------------: |
+| Total experiments                |            11 |
+| Successful experiments           |             9 |
+| Failed experiments               |             2 |
+| Overall success rate             |        81.82% |
+| Average successful recovery time | 13.74 seconds |
+| Fastest recovery                 |  3.41 seconds |
+| Slowest successful recovery      | 38.36 seconds |
+
+### Results by Scenario
+
+| Failure Scenario         | Runs | Successful | Failed | Average Successful Recovery |
+| ------------------------ | ---: | ---------: | -----: | --------------------------: |
+| API became unhealthy     |    2 |          1 |      1 |               38.36 seconds |
+| API container stopped    |    3 |          2 |      1 |               16.47 seconds |
+| Worker container stopped |    2 |          2 |      0 |               17.33 seconds |
+| PostgreSQL unavailable   |    2 |          2 |      0 |                5.39 seconds |
+| Redis unavailable        |    2 |          2 |      0 |                3.45 seconds |
+
+The API and worker containers were automatically restarted after failure detection. PostgreSQL and Redis scenarios followed a controlled manual-recovery policy and were used to verify dependency-failure detection and application readiness recovery.
+
+Two experiments failed because recovery was not completed within the configured 120-second timeout. These failures were retained in the results instead of being removed, allowing unsuccessful remediation attempts to be tracked alongside successful recoveries.
+
+The reported recovery averages are calculated only from successful experiments. Failed experiments are included in the overall experiment count and success rate, but their timeout durations are not treated as successful recovery times.
