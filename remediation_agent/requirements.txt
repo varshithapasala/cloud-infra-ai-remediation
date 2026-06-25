@@ -1,0 +1,5 @@
+docker==7.1.0
+requests
+prometheus-client
+google-genai
+pydantic

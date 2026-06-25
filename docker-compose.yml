@@ -1,0 +1,170 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: cloud-postgres
+    environment:
+      POSTGRES_DB: clouddb
+      POSTGRES_USER: clouduser
+      POSTGRES_PASSWORD: cloudpass
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U clouduser -d clouddb"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cloud-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: cloud-redis
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "redis-cli",
+          "ping"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cloud-network
+
+  order-api:
+    build:
+      context: ./services/api
+    container_name: order-api
+    environment:
+      DATABASE_URL: postgresql://clouduser:cloudpass@postgres:5432/clouddb
+      REDIS_HOST: redis
+    ports:
+      - "8000:8000"
+    labels:
+      remediation.enabled: "true"
+      remediation.role: "application"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - cloud-network
+
+  order-worker:
+    build:
+      context: ./services/worker
+    container_name: order-worker
+    environment:
+      DATABASE_URL: postgresql://clouduser:cloudpass@postgres:5432/clouddb
+      REDIS_HOST: redis
+    labels:
+      remediation.enabled: "true"
+      remediation.role: "worker"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - cloud-network
+
+  prometheus:
+    image: prom/prometheus
+    container_name: cloud-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/alert_rules.yml:/etc/prometheus/alert_rules.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+    networks:
+      - cloud-network
+
+  grafana:
+    image: grafana/grafana
+    container_name: cloud-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - cloud-network
+
+  remediation-agent:
+    build:
+      context: .
+      dockerfile: remediation_agent/Dockerfile
+    container_name: remediation-agent
+    env_file:
+      - .env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./data:/app/data
+    depends_on:
+      - order-api
+      - order-worker
+    networks:
+      - cloud-network
+
+  incident-api:
+    build:
+      context: .
+      dockerfile: incident_api/Dockerfile
+    container_name: incident-api
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      - remediation-agent
+    networks:
+      - cloud-network
+  incident-dashboard:
+    build:
+      context: .
+      dockerfile: dashboard/Dockerfile
+    container_name: incident-dashboard
+    ports:
+      - "8081:80"
+    depends_on:
+      - incident-api
+    networks:
+      - cloud-network
+networks:
+  cloud-network:
+    name: cloud-remediation-network
+
+volumes:
+  postgres-data:
+  redis-data:
+  prometheus-data:
+  grafana-data:

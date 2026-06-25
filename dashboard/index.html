@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Cloud Remediation Dashboard</title>
+
+    <link
+        rel="stylesheet"
+        href="styles.css"
+    >
+</head>
+
+<body>
+    <header class="header">
+        <div>
+            <h1>Cloud Infrastructure Remediation</h1>
+
+            <p>
+                Incident monitoring, AI analysis and automated
+                recovery evaluation
+            </p>
+        </div>
+
+        <button
+            id="refresh-button"
+            type="button"
+        >
+            Refresh
+        </button>
+    </header>
+
+    <main class="container">
+
+        <section>
+            <h2>Incident Overview</h2>
+
+            <div class="cards">
+                <article class="card">
+                    <span>Total incidents</span>
+                    <strong id="total-incidents">0</strong>
+                </article>
+
+                <article class="card">
+                    <span>Open incidents</span>
+                    <strong id="open-incidents">0</strong>
+                </article>
+
+                <article class="card">
+                    <span>Resolved incidents</span>
+                    <strong id="resolved-incidents">0</strong>
+                </article>
+
+                <article class="card">
+                    <span>Resolution rate</span>
+                    <strong id="resolution-rate">0%</strong>
+                </article>
+            </div>
+        </section>
+
+        <section>
+            <h2>Failure Experiment Results</h2>
+
+            <div class="cards">
+                <article class="card">
+                    <span>Total experiments</span>
+                    <strong id="total-experiments">0</strong>
+                </article>
+
+                <article class="card">
+                    <span>Successful experiments</span>
+                    <strong id="successful-experiments">0</strong>
+                </article>
+
+                <article class="card">
+                    <span>Failed experiments</span>
+                    <strong id="failed-experiments">0</strong>
+                </article>
+
+                <article class="card">
+                    <span>Success rate</span>
+                    <strong id="experiment-success-rate">0%</strong>
+                </article>
+
+                <article class="card">
+                    <span>Average recovery time</span>
+                    <strong id="average-recovery-time">--</strong>
+                </article>
+
+                <article class="card">
+                    <span>Fastest recovery</span>
+                    <strong id="fastest-recovery-time">--</strong>
+                </article>
+
+                <article class="card">
+                    <span>Slowest recovery</span>
+                    <strong id="slowest-recovery-time">--</strong>
+                </article>
+            </div>
+        </section>
+
+        <section>
+            <h2>Recovery Performance by Scenario</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Scenario</th>
+                            <th>Total runs</th>
+                            <th>Successful</th>
+                            <th>Failed</th>
+                            <th>Average recovery</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="scenario-statistics-body">
+                        <tr>
+                            <td colspan="5">
+                                Loading scenario statistics...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section>
+            <h2>Experiment History</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Scenario</th>
+                            <th>Resource</th>
+                            <th>Started</th>
+                            <th>Recovery time</th>
+                            <th>Result</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="experiments-body">
+                        <tr>
+                            <td colspan="7">
+                                Loading experiment results...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section>
+            <h2>Recent Incidents</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Resource</th>
+                            <th>Type</th>
+                            <th>Severity</th>
+                            <th>Status</th>
+                            <th>Detected</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="incidents-body">
+                        <tr>
+                            <td colspan="6">
+                                Loading incidents...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <p id="error-message"></p>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

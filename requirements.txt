@@ -1,0 +1,9 @@
+docker==7.1.0
+requests
+prometheus-client
+pydantic
+pydantic-settings
+python-dotenv
+pytest
+httpx
+google-genai

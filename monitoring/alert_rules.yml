@@ -1,0 +1,30 @@
+groups:
+  - name: application-alerts
+    rules:
+      - alert: OrderAPIDown
+        expr: up{job="order-api"} == 0
+        for: 20s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Order API is unavailable"
+
+      - alert: OrderWorkerDown
+        expr: up{job="order-worker"} == 0
+        for: 20s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Order worker is unavailable"
+
+      - alert: HighAPIRequestLatency
+        expr: |
+          rate(order_api_request_duration_seconds_sum[2m])
+          /
+          rate(order_api_request_duration_seconds_count[2m])
+          > 3
+        for: 30s
+        labels:
+          severity: warning
+        annotations:
+          summary: "Order API latency is high"
